@@ -35,7 +35,7 @@ jobs:
       if: ${{ env.IS_STATIC_EXPORT }} # Conditional step
 
     - name: Debug Web App Name
-      run: echo "Deploying to app: ${{ secrets.AZURE_WEBAPP_NAME }} in subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}"  
+      run: echo "Deploying to app: ${{ secrets.AZURE_WEBAPP_NAME }} in subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}"
 
     - name: Login to Azure
       uses: azure/login@v2

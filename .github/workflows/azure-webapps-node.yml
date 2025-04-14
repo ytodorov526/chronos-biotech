@@ -14,6 +14,9 @@ permissions:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    env:
+      IS_STATIC_EXPORT: false  # Set to 'true' if your Next.js app needs static export
+      DEPLOYMENT_PACKAGE: './out'  # Adjust this based on your build output directory
 
     steps:
     - name: Checkout code
@@ -32,7 +35,7 @@ jobs:
 
     - name: Export for Static Sites (if applicable)
       run: npm run export
-      if: ${{ env.IS_STATIC_EXPORT }} # Conditional step
+      if: ${{ env.IS_STATIC_EXPORT == 'true' }}  # Only runs if IS_STATIC_EXPORT is true
 
     - name: Debug Web App Name
       run: echo "Deploying to app: ${{ secrets.AZURE_WEBAPP_NAME }} in subscription: ${{ secrets.AZURE_SUBSCRIPTION_ID }}"

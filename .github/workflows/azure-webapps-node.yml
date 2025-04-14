@@ -30,6 +30,15 @@ jobs:
     - name: Build Next.js application
       run: npm run build
     
+    - name: Prepare deployment package
+      run: |
+        mkdir -p deploy
+        cp -r .next deploy/
+        cp -r public deploy/ 2>/dev/null || :
+        cp package.json deploy/
+        cp next.config.js deploy/ 2>/dev/null || :
+        cp -r node_modules deploy/
+    
     - name: Login to Azure
       uses: azure/login@v2
       with:
@@ -42,4 +51,4 @@ jobs:
       with:
         app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
         slot-name: 'production'
-        package: '.next'
+        package: 'deploy'

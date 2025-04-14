@@ -6,6 +6,7 @@ on:
       - master
   workflow_dispatch:
 
+# Add permissions needed for OIDC authentication
 permissions:
   id-token: write
   contents: read
@@ -13,37 +14,32 @@ permissions:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-
+    
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '22.x'
-
+        node-version: '18.x'
+    
     - name: Install dependencies
       run: npm ci
-
+    
     - name: Build Next.js application
       run: npm run build
-
-    - name: Export for Static Sites
-      run: npm run export
-
-    - name: List Build Output (Debug)
-      run: ls -la ./out
-
+    
     - name: Login to Azure
       uses: azure/login@v2
       with:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
+    
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with:
         app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
         slot-name: 'production'
-        package: './out'
+        package: '.next'

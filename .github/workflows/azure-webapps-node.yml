@@ -33,13 +33,38 @@ jobs:
     - name: Prepare deployment package
       run: |
         mkdir -p deploy
-        cp -r .next deploy/
-        cp -r public deploy/ 2>/dev/null || :
-        cp package.json deploy/
-        cp package-lock.json deploy/
-        cp next.config.js deploy/ 2>/dev/null || :
-        # Include only production runtime files, not all node_modules
-        echo "SCM_DO_BUILD_DURING_DEPLOYMENT=true" > deploy/.env
+        # Copy the standalone build output
+        cp -r .next/standalone/* deploy/
+        # Copy the .next folder inside the standalone directory
+        mkdir -p deploy/.next
+        cp -r .next/static deploy/.next/
+        # Copy public assets
+        cp -r public deploy/
+        # Create web.config for Azure App Service
+        cat > deploy/web.config << 'EOF'
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <system.webServer>
+    <webSocket enabled="false" />
+    <handlers>
+      <add name="iisnode" path="server.js" verb="*" modules="iisnode"/>
+    </handlers>
+    <rewrite>
+      <rules>
+        <rule name="DynamicContent">
+          <match url="/*" />
+          <action type="Rewrite" url="server.js"/>
+        </rule>
+      </rules>
+    </rewrite>
+    <staticContent>
+      <mimeMap fileExtension=".json" mimeType="application/json" />
+    </staticContent>
+    <httpErrors existingResponse="PassThrough" />
+    <iisnode watchedFiles="web.config;*.js"/>
+  </system.webServer>
+</configuration>
+EOF
     
     - name: Login to Azure
       uses: azure/login@v2

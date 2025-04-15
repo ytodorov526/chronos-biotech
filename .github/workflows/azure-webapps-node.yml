@@ -64,7 +64,7 @@ jobs:
             <iisnode watchedFiles="web.config;*.js"/>
           </system.webServer>
         </configuration>
-EOF
+        EOF
     
     - name: Login to Azure
       uses: azure/login@v2

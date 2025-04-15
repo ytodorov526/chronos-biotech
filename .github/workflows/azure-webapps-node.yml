@@ -38,8 +38,8 @@ jobs:
         # Copy the .next folder inside the standalone directory
         mkdir -p deploy/.next
         cp -r .next/static deploy/.next/
-        # Copy public assets
-        cp -r public deploy/
+        # Copy public assets from the correct location
+        cp -r chronos-biotech/public deploy/
         # Create web.config for Azure App Service
         cat > deploy/web.config << 'EOF'
         <?xml version="1.0" encoding="utf-8"?>
